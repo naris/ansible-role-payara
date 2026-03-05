@@ -1,0 +1,19 @@
+---
+- name: Create thread pools
+  command: >
+    {{ payara_home }}/bin/asadmin
+    --user {{ payara_admin_user }}
+    --passwordfile pwdfile
+    create-threadpool
+    --maxthreadpoolsize {{ item.maxthreadpoolsize | default(200) }}
+    --minthreadpoolsize {{ item.minthreadpoolsize | default(2) }}
+    --maxqueuesize {{ item.maxqueuesize | default(4096) }}
+    {{ item.name }}
+  args:
+    chdir: "{{ payara_home }}/bin"
+  with_items: "{{ payara_threadpools }}"
+  when: payara_threadpools is defined
+  register: create_threadpools
+
+- debug:
+    var: create_threadpools

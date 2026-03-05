@@ -8,10 +8,13 @@
     name: "{{ payara_user }}"
     group: "{{ payara_group }}"
     home: "{{ payara_base }}"
-    createhome: yes
+    shell: /bin/bash
+    system: true
+    createhome: true
+    expires: -1
     state: present
 
-- name: install unarchive packages
+- name: Install unarchive packages
   package: name={{ item }} state=latest
   with_items:
     - unzip

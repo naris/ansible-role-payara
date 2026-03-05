@@ -1,40 +1,49 @@
-
-- shell: >
-    ./asadmin start-domain payaradomain &&
-    ./asadmin
-    --user {{ payara_admin_user }}
-    --passwordfile pwdfile
-    create-jdbc-connection-pool
-    --datasourceclassname {{ item.classname }}
-    --restype javax.sql.DataSource
-    --property user={{ item.db.user }}:password={{ item.db.password }}:DatabaseName={{ item.db.name }}:ServerName={{ item.db.host }}:port={{ item.db.port }}
-    {{ item.name }} &&
-    ./asadmin stop-domain payaradomain
+---
+- name: Create JDBC connection pools
+  shell: |
+    {% set escaped_pwd = item.db.password | replace(':', '\\\\:') %}
+    {% if item.db.url is defined %}
+    {% set escaped_url = item.db.url | replace(':', '\\\\:') %}
+    {{ payara_home }}/bin/asadmin \
+      --user {{ payara_admin_user }} \
+      --passwordfile pwdfile \
+      create-jdbc-connection-pool \
+      --datasourceclassname {{ item.classname }} \
+      --restype javax.sql.DataSource \
+      --property "user={{ item.db.user }}:password={{ escaped_pwd }}:url={{ escaped_url }}" \
+      {{ item.name }}
+    {% else %}
+    {{ payara_home }}/bin/asadmin \
+      --user {{ payara_admin_user }} \
+      --passwordfile pwdfile \
+      create-jdbc-connection-pool \
+      --datasourceclassname {{ item.classname }} \
+      --restype javax.sql.DataSource \
+      --property "user={{ item.db.user }}:password={{ escaped_pwd }}:ServerName={{ item.db.host }}:port={{ item.db.port }}" \
+      {{ item.name }}
+    {% endif %}
   args:
     chdir: "{{ payara_home }}/bin"
   with_items: "{{ payara_connection_pools }}"
   when: payara_connection_pools is defined
   register: create_ds_pools
-  ignore_errors: yes
 
 - debug:
     var: create_ds_pools
 
-- shell: >
-    ./asadmin start-domain payaradomain &&
-    ./asadmin
+- name: Create JDBC resources
+  command: >
+    {{ payara_home }}/bin/asadmin
     --user {{ payara_admin_user }}
     --passwordfile pwdfile
     create-jdbc-resource
     --connectionpoolid {{ item.connection_pool_id }}
-    {{ item.name }} &&
-    ./asadmin stop-domain payaradomain
+    {{ item.name }}
   args:
     chdir: "{{ payara_home }}/bin"
   with_items: "{{ payara_jdbc_resources }}"
   when: payara_jdbc_resources is defined
   register: create_jdbc_resources
-  ignore_errors: yes
 
 - debug:
     var: create_jdbc_resources

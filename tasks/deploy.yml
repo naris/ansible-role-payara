@@ -1,0 +1,23 @@
+---
+- debug:
+    var: payara_deploy_packages
+
+- name: Deploy applications
+  command: >
+    {{ payara_home }}/bin/asadmin
+    --user {{ payara_admin_user }}
+    --passwordfile pwdfile
+    deploy-remote-archive
+    --name {{ item.name }}
+    --contextroot {{ item.contextroot | default('/') }}
+    --target {{ item.target | default('server') }}
+    --virtualservers {{ item.virtual | default('server') }}
+    {{ item.package }}
+  args:
+    chdir: "{{ payara_home }}/bin"
+  with_items: "{{ payara_deploy_packages }}"
+  when: payara_deploy_packages is defined
+  register: deploy_applications
+
+- debug:
+    var: deploy_applications
