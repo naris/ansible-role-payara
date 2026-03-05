@@ -1,0 +1,10 @@
+---
+#
+- name: Download JDBC drivers
+  get_url:
+    url: "{{ item.value }}"
+    dest: "{{ payara_home }}/glassfish/domains/{{ payara_domain_name }}/lib/{{ item.key }}.jar"
+    owner: "{{ payara_user }}"
+    group: "{{ payara_group }}"
+    mode: '0644'
+  with_dict: "{{ payara_jdbc_drivers }}"

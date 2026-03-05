@@ -1,0 +1,19 @@
+---
+#
+- name: Create virtual servers
+  command: >
+    {{ payara_home }}/bin/asadmin
+    --user {{ payara_admin_user }}
+    --passwordfile pwdfile
+    create-virtual-server
+    --hosts {{ item.hosts | default('localhost') }}
+    --networklisteners {{ item.networklisteners | default('http-listener-1,http-listener-2') }}
+    {{ item.name }}
+  args:
+    chdir: "{{ payara_home }}/bin"
+  with_items: "{{ payara_virtual_servers }}"
+  when: payara_virtual_servers is defined
+  register: create_virtual_servers
+
+- debug:
+    var: create_virtual_servers

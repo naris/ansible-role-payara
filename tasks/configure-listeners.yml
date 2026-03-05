@@ -1,0 +1,124 @@
+---
+- name: Create protocols for all listeners
+  command: >
+    {{ payara_home }}/bin/asadmin
+    --user {{ payara_admin_user }}
+    --passwordfile pwdfile
+    create-protocol
+    --securityenabled={{ item.securityenabled | default('false') }}
+    --target={{ item.target | default('server') }}
+    {{ item.protocol }}
+  args:
+    chdir: "{{ payara_home }}/bin"
+  with_items: "{{ payara_listeners }}"
+  when: payara_listeners is defined and item.protocol is defined
+  register: create_protocols
+  failed_when: create_protocols.rc is defined and create_protocols.rc != 0 and 'already exists' not in create_protocols.stderr
+
+- debug:
+    var: create_protocols
+
+- name: Create HTTP for protocols
+  command: >
+    {{ payara_home }}/bin/asadmin
+    --user {{ payara_admin_user }}
+    --passwordfile pwdfile
+    create-http
+    --default-virtual-server={{ item.default_virtual_server | default('server') }}
+    --target={{ item.target | default('server') }}
+    {{ item.protocol }}
+  args:
+    chdir: "{{ payara_home }}/bin"
+  with_items: "{{ payara_listeners }}"
+  when: payara_listeners is defined and item.protocol is defined
+  register: create_http
+  failed_when: create_http.rc is defined and create_http.rc != 0 and 'already exists' not in create_http.stderr
+
+- debug:
+    var: create_http
+
+- name: Extract JK-enabled listeners
+  set_fact:
+    jk_protocols: "{{ payara_listeners | selectattr('jkenabled', 'defined') | selectattr('jkenabled') | selectattr('protocol', 'defined') | list }}"
+  when: payara_listeners is defined
+
+- name: Check JK attribute availability for protocols from JK-enabled listeners
+  command: >
+    {{ payara_home }}/bin/asadmin
+    --user {{ payara_admin_user }}
+    --passwordfile pwdfile
+    get
+    configs.config.{{ item.target | default('server') }}-config.network-config.protocols.protocol.{{ item.protocol }}.http.jk-enabled
+  args:
+    chdir: "{{ payara_home }}/bin"
+  with_items: "{{ jk_protocols }}"
+  when: jk_protocols is defined and jk_protocols | length > 0
+  register: jk_enabled_attribute_check
+  changed_when: false
+  failed_when: false
+
+- name: Filter JK protocols with supported JK attribute
+  set_fact:
+    jk_protocols_with_attr: "{{ jk_enabled_attribute_check.results | selectattr('rc', 'equalto', 0) | map(attribute='item') | list }}"
+  when: jk_enabled_attribute_check is defined
+
+- name: Enable JK for protocols from JK-enabled listeners
+  command: >
+    {{ payara_home }}/bin/asadmin
+    --user {{ payara_admin_user }}
+    --passwordfile pwdfile
+    set
+    configs.config.{{ item.target | default('server') }}-config.network-config.protocols.protocol.{{ item.protocol }}.http.jk-enabled=true
+  args:
+    chdir: "{{ payara_home }}/bin"
+  with_items: "{{ jk_protocols_with_attr }}"
+  when: jk_protocols_with_attr is defined and jk_protocols_with_attr | length > 0
+  register: enable_jk
+  failed_when: enable_jk.rc is defined and enable_jk.rc != 0 and 'No configuration found' not in enable_jk.stderr and 'already set' not in enable_jk.stdout
+
+- debug:
+    var: enable_jk
+
+- name: Create HTTP listeners
+  command: >
+    {{ payara_home }}/bin/asadmin
+    --user {{ payara_admin_user }}
+    --passwordfile pwdfile
+    create-http-listener
+    --listeneraddress {{ item.address }}
+    --listenerport {{ item.port }}
+    --default-virtual-server {{ item.default_virtual_server | default('server') }}
+    {{ item.name }}
+  args:
+    chdir: "{{ payara_home }}/bin"
+  with_items: "{{ payara_listeners }}"
+  when: payara_listeners is defined and (item.jkenabled is not defined or not item.jkenabled)
+  register: create_http_listeners
+
+- debug:
+    var: create_http_listeners
+
+- name: Create network listeners
+  command: >
+    {{ payara_home }}/bin/asadmin
+    --user {{ payara_admin_user }}
+    --passwordfile pwdfile
+    create-network-listener
+    --target {{ item.target | default('server') }}
+    --listenerport {{ item.port }}
+    --address {{ item.address }}
+    --protocol {{ item.protocol }}
+    --jkenabled {{ item.jkenabled | default(true) | ternary('true', 'false') }}
+    --threadpool {{ item.threadpool | default('http-thread-pool') }}
+    --transport {{ item.transport | default('tcp') }}
+    --enabled=true
+    {{ item.name }}
+  args:
+    chdir: "{{ payara_home }}/bin"
+  with_items: "{{ payara_listeners }}"
+  when: payara_listeners is defined and item.jkenabled is defined and item.jkenabled and item.protocol is defined
+  register: create_network_listeners
+  failed_when: create_network_listeners.rc is defined and create_network_listeners.rc != 0 and 'already exists' not in create_network_listeners.stderr
+
+- debug:
+    var: create_network_listeners

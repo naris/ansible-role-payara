@@ -1,1 +1,1 @@
-payara_url: "{{ payara_download_directory }}/payara-minimal-{{ payara_release }}.zip"
+payara_url: "{{ payara_download_base }}/distributions/payara-minimal/{{ payara_release }}/payara-minimal-{{ payara_release }}.zip"

@@ -1,2 +1,2 @@
 payara_home: "{{ payara_base }}/payara{{ payara_glassfish_version }}{{ payara_glassfish_release }}"
-payara_url: "{{ payara_download_directory }}/payara-{{ payara_release }}.zip"
+payara_url: "{{ payara_download_base }}/distributions/payara/{{ payara_release }}/payara-{{ payara_release }}.zip"

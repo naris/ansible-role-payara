@@ -1,9 +1,10 @@
 ---
 #
-- debug:
-    msg: "{{ payara_url }} will be donwloaded in {{ payara_home }}"
+- name: Download payara
+  debug:
+    msg: "{{ payara_url }} will be downloaded in {{ payara_home }}"
 
-- name: install payara
+- name: Install payara
   unarchive:
     src: "{{ payara_url }}"
     dest: "{{ payara_base }}"
@@ -13,7 +14,7 @@
     group: "{{ payara_group }}"
   when: payara_distribution != 'micro'
 
-#- name: install payara micro
+#- name: Install payara micro
 #  get_url:
 #    src: "{{ payara_url }}"
 #    dest: "{{ payara_home }}"
@@ -22,3 +23,6 @@
 #    creates: "{{ payara_home }}/bin/asadmin"
 #  become: yes
 #  when: payara_distribution == 'micro'
+
+
+

@@ -1,0 +1,19 @@
+---
+
+- name: Create domain
+  command: >
+    {{ payara_home }}/bin/asadmin create-domain
+    --domaindir {{ payara_home }}/glassfish/domains
+    --portbase {{ payara_portbase }}
+    --user {{ payara_admin_user }}
+    --passwordfile pwdfile
+    {{ payara_domain_name }}
+  args:
+    chdir: "{{ payara_home }}/bin"
+    creates: "{{ payara_home }}/glassfish/domains/{{ payara_domain_name }}"
+  register: create_result
+  become_user: payara
+- debug:
+    msg:
+      - "payara_domain_name: {{ payara_domain_name }}"
+      - "create_result: {{ create_result }}"

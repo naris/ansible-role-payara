@@ -1,7 +1,65 @@
 ---
 #
-- include: configure-admin-user.yml
+- name: Configure pwdfile
+  template:
+    src: pwdfile.j2
+    dest: "{{ payara_home }}/bin/pwdfile"
 
-- include: configure-datasources.yml
+- import_tasks: configure-domain.yml
+  when: payara_domain_name != "domain1" # domain1 is the default domain and will already exist
 
-- include: configure-executor-services.yml
+- import_tasks: install-drivers.yml
+  when: payara_jdbc_drivers is defined
+
+- block:
+  - name: Start domain
+    command: >
+      ./asadmin start-domain {{ payara_domain_name }}
+    args:
+      chdir: "{{ payara_home }}/bin"
+    register: start_result
+
+  - debug:
+      msg:
+        - "payara_domain_name: {{ payara_domain_name }}"
+        - "start_result: {{ start_result }}"
+
+  - import_tasks: configure-admin-user.yml
+
+  - import_tasks: configure-datasources.yml
+    when: payara_connection_pools is defined or payara_jdbc_resources is defined
+
+  - import_tasks: configure-executor-services.yml
+    when: payara_managed_executor_services is defined
+
+  - import_tasks: configure-threadpools.yml
+    when: payara_threadpools is defined
+
+  - import_tasks: configure-listeners.yml
+    when: payara_listeners is defined
+
+  - import_tasks: configure-virtualservers.yml
+    when: payara_virtual_servers is defined
+
+  - import_tasks: deploy.yml
+    when: payara_deploy_packages is defined
+
+  always:
+  - name: Stop domain
+    command: ./asadmin stop-domain --timeout 600 {{ payara_domain_name }} # running locally on WSL takes a really long time to stop :(
+    args:
+      chdir: "{{ payara_home }}/bin"
+    register: stop_result
+    ignore_errors: true
+
+  - debug:
+      msg:
+        - "payara_domain_name: {{ payara_domain_name }}"
+        - "stop_result: {{ stop_result }}"
+
+# Don't delete pwdfile yet to allow debugging.
+
+#  - file:
+#      path: "{{ payara_home }}/bin/pwdfile"
+#      state: absent
+#    ignore_errors: true

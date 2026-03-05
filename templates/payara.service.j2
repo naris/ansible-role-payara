@@ -1,0 +1,15 @@
+[Unit]
+Description=Payara Server
+After=network.target
+
+[Service]
+Type=forking
+User=payara
+Group=payara
+ExecStart={{ payara_home }}/bin/asadmin start-domain {{ payara_domain_name }}
+ExecStop={{ payara_home }}/bin/asadmin stop-domain {{ payara_domain_name }}
+ExecReload={{ payara_home }}/bin/asadmin restart-domain {{ payara_domain_name }}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

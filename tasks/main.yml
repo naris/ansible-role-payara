@@ -1,13 +1,21 @@
 ---
 # tasks file for payara
-- include: prepare.yml
-  become: yes
+- import_tasks: prepare.yml
+  become: true
 
 - include_vars: "payara-{{ payara_distribution }}-{{ payara_multilanguage }}-ml.yml"
 
-- include: install.yml
-  become: yes
+- import_tasks: install.yml
+  become: true
 
-- include: configure.yml
-  become: yes
+- import_tasks: configure.yml
   become_user: "{{ payara_user }}"
+  become: true
+
+- import_tasks: configure-systemd.yml
+  when: payara_systemd
+  become: true
+
+- import_tasks: start.yml
+  when: payara_start and payara_systemd
+  become: true
