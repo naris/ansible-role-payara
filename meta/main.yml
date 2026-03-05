@@ -1,5 +1,5 @@
 galaxy_info:
-  author: jeqo (quilcate.jorge@gmail.com)
+  author: jeqo (quilcate.jorge@gmail.com), naris (murray.wilson@gmail.com)
   description: payara role to install and configure payara server
 
   license: MIT
