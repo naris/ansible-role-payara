@@ -20,7 +20,7 @@ You can use this ansible role: <https://galaxy.ansible.com/ui/standalone/roles/g
 #### `payara_connection_pools` item
 
 | Field | Required | Notes |
-|---|---|---|
+| --- | --- | --- |
 | `name` | Yes | Connection pool name |
 | `classname` | Yes | JDBC datasource class |
 | `db.user` | Yes | Database username |
@@ -32,14 +32,14 @@ You can use this ansible role: <https://galaxy.ansible.com/ui/standalone/roles/g
 #### `payara_jdbc_resources` item
 
 | Field | Required | Notes |
-|---|---|---|
+| --- | --- | --- |
 | `name` | Yes | JNDI name (for example `jdbc/MyDS`) |
 | `connection_pool_id` | Yes | Existing pool name |
 
 #### `payara_threadpools` item
 
 | Field | Required | Notes |
-|---|---|---|
+| --- | --- | --- |
 | `name` | Yes | Thread pool name |
 | `maxthreadpoolsize` | No | Default `200` |
 | `minthreadpoolsize` | No | Default `2` |
@@ -48,7 +48,7 @@ You can use this ansible role: <https://galaxy.ansible.com/ui/standalone/roles/g
 #### `payara_listeners` item
 
 | Field | Required | Notes |
-|---|---|---|
+| --- | --- | --- |
 | `name` | Yes | Listener name |
 | `address` | Yes | Listener address |
 | `port` | Yes | Listener port |
@@ -63,7 +63,7 @@ You can use this ansible role: <https://galaxy.ansible.com/ui/standalone/roles/g
 #### `payara_virtual_servers` item
 
 | Field | Required | Notes |
-|---|---|---|
+| --- | --- | --- |
 | `name` | Yes | Virtual server name |
 | `hosts` | No | Default `localhost` |
 | `networklisteners` | No | Default `http-listener-1,http-listener-2` |
@@ -71,7 +71,7 @@ You can use this ansible role: <https://galaxy.ansible.com/ui/standalone/roles/g
 #### `payara_deploy_packages` item
 
 | Field | Required | Notes |
-|---|---|---|
+| --- | --- | --- |
 | `name` | Yes | Application name |
 | `package` | Yes | Archive location for `deploy-remote-archive` |
 | `contextroot` | No | Default `/` |
@@ -81,36 +81,36 @@ You can use this ansible role: <https://galaxy.ansible.com/ui/standalone/roles/g
 #### `payara_managed_executor_services` item
 
 | Field | Required | Notes |
-|---|---|---|
+| --- | --- | --- |
 | String value | Yes | Service name passed to `create-managed-executor-service` |
 
 ### Installation Variables
 
-- __payara_release__: version of the product (Payara), _6.2024.12_ by default.
-- __payara_glassfish_version__: major version of the product (Payara), _6_ by default.
-- __payara_glassfish_release__: minor version of the product (Payara), if any.
-- __payara_multilanguage__: Indicates whether or not to install a Payara Multi-Language (ML) distribution, _false_ by default, ml is not available for micro or minimal distributions.
-- __payara_distribution__: Indicates what distribution to install (full, web, micro or minimal), _full_ by default, _minimal_ is only available for payara 4.
-- __payara_download_base__: base url to download the product (Payara) from, _<https://repo1.maven.org/maven2/fish/payara>_ by default.
-- __payara_url__: url to download the product (Payara) from, built from _payara_download_base_, _payara_distribution_ & _payara_multilanguage_ values.
-- __payara_user__: user on the system to own the payara install, _payara_ by default.
-- __payara_group__: group on the system to own the payara install, _payara_ by default.
-- __payara_base__: base directory to install the product (Payara) into, _/opt/payara_ by default.
-- __payara_home__: full directory to install the product (Payara) into, _\{PAYARA_BASE\}/payara\{VERSION\}\{RELEASE\}_ by default.
+- **payara_release**: version of the product (Payara), _6.2024.12_ by default.
+- **payara_glassfish_version**: major version of the product (Payara), _6_ by default.
+- **payara_glassfish_release**: minor version of the product (Payara), if any.
+- **payara_multilanguage**: Indicates whether or not to install a Payara Multi-Language (ML) distribution, _false_ by default, ml is not available for micro or minimal distributions.
+- **payara_distribution**: Indicates what distribution to install (full, web, micro or minimal), _full_ by default, _minimal_ is only available for payara 4.
+- **payara_download_base**: base url to download the product (Payara) from, _<https://repo1.maven.org/maven2/fish/payara>_ by default.
+- **payara_url**: url to download the product (Payara) from, built from _payara_download_base_, _payara_distribution_ & _payara_multilanguage_ values.
+- **payara_user**: user on the system to own the payara install, _payara_ by default.
+- **payara_group**: group on the system to own the payara install, _payara_ by default.
+- **payara_base**: base directory to install the product (Payara) into, _/opt/payara_ by default.
+- **payara_home**: full directory to install the product (Payara) into, _\{PAYARA_BASE\}/payara\{VERSION\}\{RELEASE\}_ by default.
 
 ### Domain Configuration
 
-- __payara_host__: _0.0.0.0_ by default.
-- __payara_portbase__: the number with which port assignments should start, _4800_ by default.
-- __payara_admin_port__: the payara administration port, _4848_ by default.
-- __payara_admin_user__: _admin_ by default.
-- __payara_admin_password__: admin password, empty by default.
-- __payara_domain_name__: _domain1_ by default.
+- **payara_host**: _0.0.0.0_ by default.
+- **payara_portbase**: the number with which port assignments should start, _4800_ by default.
+- **payara_admin_port**: the payara administration port, _4848_ by default.
+- **payara_admin_user**: _admin_ by default.
+- **payara_admin_password**: admin password, empty by default.
+- **payara_domain_name**: _domain1_ by default.
 
 ### Database Configuration
 
-- __payara_jdbc_drivers__: dictionary of JDBC drivers to download and install. Key is the driver name, value is the download URL.
-- __payara_connection_pools__: list of JDBC connection pools to create. Each pool requires:
+- **payara_jdbc_drivers**: dictionary of JDBC drivers to download and install. Key is the driver name, value is the download URL.
+- **payara_connection_pools**: list of JDBC connection pools to create. Each pool requires:
   - `name`: connection pool name
   - `classname`: datasource class name
   - `db.user`: database username
@@ -118,18 +118,18 @@ You can use this ansible role: <https://galaxy.ansible.com/ui/standalone/roles/g
   - `db.url`: database URL (optional, if not provided uses ServerName/port)
   - `db.host`: database host (required if url not provided)
   - `db.port`: database port (required if url not provided)
-- __payara_jdbc_resources__: list of JDBC resources to create. Each resource requires:
+- **payara_jdbc_resources**: list of JDBC resources to create. Each resource requires:
   - `name`: JNDI name
   - `connection_pool_id`: connection pool to use
 
 ### Network Configuration
 
-- __payara_threadpools__: list of thread pools to create. Each pool supports:
+- **payara_threadpools**: list of thread pools to create. Each pool supports:
   - `name`: thread pool name
   - `maxthreadpoolsize`: maximum threads (default: 200)
   - `minthreadpoolsize`: minimum threads (default: 2)
   - `maxqueuesize`: maximum queue size (default: 4096)
-- __payara_listeners__: list of network listeners to create. Each listener requires:
+- **payara_listeners**: list of network listeners to create. Each listener requires:
   - `name`: listener name
   - `address`: listener address
   - `port`: listener port
@@ -140,18 +140,18 @@ You can use this ansible role: <https://galaxy.ansible.com/ui/standalone/roles/g
   - `transport`: transport type (default: tcp)
   - `securityenabled`: protocol security flag when creating protocol (default: false)
   - `jkenabled`: set to true to create as network listener with JK support and auto-create protocol
-- __payara_virtual_servers__: list of virtual servers to create. Each server supports:
+- **payara_virtual_servers**: list of virtual servers to create. Each server supports:
   - `name`: virtual server name
   - `hosts`: hostnames (default: localhost)
   - `networklisteners`: comma-separated listener list (default: http-listener-1,http-listener-2)
 
 ### Concurrency Configuration
 
-- __payara_managed_executor_services__: list of managed executor service names to create.
+- **payara_managed_executor_services**: list of managed executor service names to create.
 
 ### Deployment Configuration
 
-- __payara_deploy_packages__: list of remote archives to deploy. Each package supports:
+- **payara_deploy_packages**: list of remote archives to deploy. Each package supports:
   - `name`: application name
   - `package`: path/URL accepted by `deploy-remote-archive`
   - `contextroot`: web context root (default: /)
@@ -160,8 +160,8 @@ You can use this ansible role: <https://galaxy.ansible.com/ui/standalone/roles/g
 
 ### Service Configuration
 
-- __payara_systemd__: Indicates whether or not to install Payara as a systemd service, _true_ by default.
-- __payara_start__: Indicates whether or not to start the Payara systemd service, _true_ by default.
+- **payara_systemd**: Indicates whether or not to install Payara as a systemd service, _true_ by default.
+- **payara_start**: Indicates whether or not to start the Payara systemd service, _true_ by default.
 
 ## Dependencies
 
@@ -177,7 +177,7 @@ A Java Development Kit is required based on Payara version (see Requirements sec
     - role: geerlingguy.java
       java_packages:
         - java-17-openjdk-devel
-    - role: jeqo.payara
+    - role: naris.ansible-role-payara
 ```
 
 ### Advanced Configuration with Database and Network
@@ -232,7 +232,7 @@ A Java Development Kit is required based on Payara version (see Requirements sec
     - role: geerlingguy.java
       java_packages:
         - java-17-openjdk-devel
-    - role: jeqo.payara
+    - role: naris.ansible-role-payara
 ```
 
 ### MySQL Database Configuration
@@ -257,7 +257,7 @@ A Java Development Kit is required based on Payara version (see Requirements sec
     - role: geerlingguy.java
       java_packages:
         - java-17-openjdk-devel
-    - role: jeqo.payara
+    - role: naris.ansible-role-payara
 ```
 
 ### Oracle Database Configuration
@@ -281,7 +281,7 @@ A Java Development Kit is required based on Payara version (see Requirements sec
     - role: geerlingguy.java
       java_packages:
         - java-17-openjdk-devel
-    - role: jeqo.payara
+    - role: naris.ansible-role-payara
 ```
 
 ## License
