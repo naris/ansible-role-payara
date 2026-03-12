@@ -2,7 +2,7 @@
 # defaults file for payara
 payara_glassfish_version: 6
 payara_glassfish_release: ""
-payara_release: 6.2024.12
+payara_release: 6.2025.11
 payara_multilanguage: false # true or false
 payara_distribution: full # full, web, micro or minimal
 payara_admin_user: admin

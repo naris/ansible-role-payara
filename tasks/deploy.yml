@@ -3,15 +3,21 @@
     var: payara_deploy_packages
 
 - name: Deploy applications
-  command: >
+  command: |
     {{ payara_home }}/bin/asadmin
     --user {{ payara_admin_user }}
     --passwordfile pwdfile
     deploy-remote-archive
     --name {{ item.name }}
-    --contextroot {{ item.contextroot | default('/') }}
-    --target {{ item.target | default('server') }}
-    --virtualservers {{ item.virtual | default('server') }}
+    {% if item.contextroot is defined %}
+    --contextroot {{ item.contextroot }}
+    {% endif %}
+    {% if item.target is defined %}
+    --target {{ item.target }}
+    {% endif %}
+    {% if item.virtual is defined and item.virtual %}
+    --virtualservers {{ item.virtual }}
+    {% endif %}
     {{ item.package }}
   args:
     chdir: "{{ payara_home }}/bin"

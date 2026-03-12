@@ -14,6 +14,14 @@
     expires: -1
     state: present
 
+- name: Create Ansible tmp dir for payara user
+  file:
+    path: "{{ payara_base }}/.ansible/tmp"
+    state: directory
+    owner: "{{ payara_user }}"
+    group: "{{ payara_group }}"
+    mode: '0755'
+
 - name: Install unarchive packages
   package: name={{ item }} state=latest
   with_items:
