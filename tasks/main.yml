@@ -11,6 +11,10 @@
 - import_tasks: configure.yml
   become_user: "{{ payara_user }}"
   become: true
+  when: payara_distribution != 'micro'
+
+- import_tasks: install-drivers.yml
+  when: payara_distribution == 'micro' and payara_jdbc_drivers is defined
 
 - import_tasks: configure-systemd.yml
   when: payara_systemd

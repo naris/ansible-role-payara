@@ -26,6 +26,9 @@
 
   - import_tasks: configure-admin-user.yml
 
+  - import_tasks: configure-host.yml
+    when: payara_host is defined and payara_host != '0.0.0.0'
+
   - import_tasks: configure-datasources.yml
     when: payara_connection_pools is defined or payara_jdbc_resources is defined
 
@@ -57,9 +60,8 @@
         - "payara_domain_name: {{ payara_domain_name }}"
         - "stop_result: {{ stop_result }}"
 
-# Don't delete pwdfile yet to allow debugging.
-
-#  - file:
-#      path: "{{ payara_home }}/bin/pwdfile"
-#      state: absent
-#    ignore_errors: true
+- file:
+    path: "{{ payara_home }}/bin/pwdfile"
+    state: absent
+  when: not payara_debug | bool
+  ignore_errors: true

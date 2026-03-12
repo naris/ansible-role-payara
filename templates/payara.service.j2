@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 Type=forking
-User=payara
-Group=payara
+User={{ payara_user }}
+Group={{ payara_group }}
 ExecStart={{ payara_home }}/bin/asadmin start-domain {{ payara_domain_name }}
 ExecStop={{ payara_home }}/bin/asadmin stop-domain {{ payara_domain_name }}
 ExecReload={{ payara_home }}/bin/asadmin restart-domain {{ payara_domain_name }}

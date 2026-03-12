@@ -1,10 +1,36 @@
 ---
 
+- name: Validate domain port options
+  assert:
+    that:
+      - >
+        (
+          (payara_portbase is defined and (payara_portbase | string | length) > 0)
+          and
+          (payara_port is not defined or (payara_port | string | length) == 0)
+          and
+          (payara_admin_port is not defined or (payara_admin_port | string | length) == 0)
+        )
+        or
+        (
+          (payara_portbase is not defined or (payara_portbase | string | length) == 0)
+        )
+    fail_msg: "Do not combine payara_portbase with payara_port or payara_admin_port."
+
 - name: Create domain
   command: >
     {{ payara_home }}/bin/asadmin create-domain
     --domaindir {{ payara_home }}/glassfish/domains
+    {% if payara_portbase is defined and (payara_portbase | string | length) > 0 %}
     --portbase {{ payara_portbase }}
+    {% elif (payara_port is defined and (payara_port | string | length) > 0) or (payara_admin_port is defined and (payara_admin_port | string | length) > 0) %}
+    {% if payara_admin_port is defined and (payara_admin_port | string | length) > 0 %}
+    --adminport {{ payara_admin_port }}
+    {% endif %}
+    {% if payara_port is defined and (payara_port | string | length) > 0 %}
+    --instanceport {{ payara_port }}
+    {% endif %}
+    {% endif %}
     --user {{ payara_admin_user }}
     --passwordfile pwdfile
     {{ payara_domain_name }}

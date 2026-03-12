@@ -14,15 +14,11 @@
     group: "{{ payara_group }}"
   when: payara_distribution != 'micro'
 
-#- name: Install payara micro
-#  get_url:
-#    src: "{{ payara_url }}"
-#    dest: "{{ payara_home }}"
-#    owner: "{{ ansible_user_id }}"
-#    copy: no
-#    creates: "{{ payara_home }}/bin/asadmin"
-#  become: yes
-#  when: payara_distribution == 'micro'
-
-
-
+- name: Install payara micro
+  get_url:
+    src: "{{ payara_url }}"
+    dest: "{{ payara_home }}/bin/payara-micro.jar"
+    owner: "{{ ansible_user_id }}"
+    copy: no
+    creates: "{{ payara_home }}/bin/payara-micro.jar"
+  when: payara_distribution == 'micro'

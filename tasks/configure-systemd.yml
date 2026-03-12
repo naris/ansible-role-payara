@@ -2,7 +2,7 @@
 #
 - name: Create Payara systemd service file
   template:
-    src: payara.service.j2
+    src: "{{ 'payara.micro.service.j2' if payara_distribution == 'micro' else 'payara.service.j2' }}"
     dest: /etc/systemd/system/payara.service
     mode: '0644'
   become: true
