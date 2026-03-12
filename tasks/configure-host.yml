@@ -1,0 +1,18 @@
+---
+- name: Configure default listener bind addresses
+  command: >
+    {{ payara_home }}/bin/asadmin
+    --user {{ payara_admin_user }}
+    --passwordfile pwdfile
+    set
+    configs.config.server-config.network-config.network-listeners.network-listener.{{ item }}.address={{ payara_host }}
+  args:
+    chdir: "{{ payara_home }}/bin"
+  with_items:
+    - admin-listener
+    - http-listener-1
+    - http-listener-2
+  register: configure_listener_addresses
+
+- debug:
+    var: configure_listener_addresses

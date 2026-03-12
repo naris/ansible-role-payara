@@ -11,6 +11,11 @@ A Java Development Kit is required based on Payara version:
 - Payara 6: JDK 11, JDK 17, or JDK 21
 - Payara 7: JDK 17 or JDK 21
 
+Role metadata currently declares:
+
+- Minimum Ansible version: 2.4
+- Platform: GenericUNIX
+
 You can use this ansible role: <https://galaxy.ansible.com/ui/standalone/roles/geerlingguy/java/>
 
 ## Role Variables
@@ -74,9 +79,9 @@ You can use this ansible role: <https://galaxy.ansible.com/ui/standalone/roles/g
 | --- | --- | --- |
 | `name` | Yes | Application name |
 | `package` | Yes | Archive location for `deploy-remote-archive` |
-| `contextroot` | No | Default `/` |
+| `contextroot` | No | Default `package filename without extension` |
 | `target` | No | Default `server` |
-| `virtual` | No | Default `server` |
+| `virtual` | No | |
 
 #### `payara_managed_executor_services` item
 
@@ -86,11 +91,11 @@ You can use this ansible role: <https://galaxy.ansible.com/ui/standalone/roles/g
 
 ### Installation Variables
 
-- **payara_release**: version of the product (Payara), _6.2024.12_ by default.
+- **payara_release**: version of the product (Payara), _6.2025.11_ by default.
 - **payara_glassfish_version**: major version of the product (Payara), _6_ by default.
 - **payara_glassfish_release**: minor version of the product (Payara), if any.
-- **payara_multilanguage**: Indicates whether or not to install a Payara Multi-Language (ML) distribution, _false_ by default, ml is not available for micro or minimal distributions.
-- **payara_distribution**: Indicates what distribution to install (full, web, micro or minimal), _full_ by default, _minimal_ is only available for payara 4.
+- **payara_multilanguage**: Indicates whether or not to install a Payara Multi-Language (ML) distribution, _false_ by default. ML is not available for `micro` and `minimal` distributions.
+- **payara_distribution**: Indicates which distribution to install (`full`, `web`, `micro` or `minimal`), _full_ by default, _minimal_ is not available for payara versions &gt; 4.
 - **payara_download_base**: base url to download the product (Payara) from, _<https://repo1.maven.org/maven2/fish/payara>_ by default.
 - **payara_url**: url to download the product (Payara) from, built from _payara_download_base_, _payara_distribution_ & _payara_multilanguage_ values.
 - **payara_user**: user on the system to own the payara install, _payara_ by default.
@@ -100,11 +105,12 @@ You can use this ansible role: <https://galaxy.ansible.com/ui/standalone/roles/g
 
 ### Domain Configuration
 
-- **payara_host**: _0.0.0.0_ by default.
-- **payara_portbase**: the number with which port assignments should start, _4800_ by default.
-- **payara_admin_port**: the payara administration port, _4848_ by default.
+- **payara_host**: _0.0.0.0_ by default. Used to set bind addresses for `admin-listener`, `http-listener-1`, and `http-listener-2`.
+- **payara_portbase**: optional port base with which port assignments should start, _4800_ by default.
+- **payara_port**: optional instance (HTTP) port, _8080_ by default.
+- **payara_admin_port**: optional administration port, _4848_ by default.
 - **payara_admin_user**: _admin_ by default.
-- **payara_admin_password**: admin password, empty by default.
+- **payara_admin_password**: admin password, _glassfish_ by default.
 - **payara_domain_name**: _domain1_ by default.
 
 ### Database Configuration
@@ -154,14 +160,26 @@ You can use this ansible role: <https://galaxy.ansible.com/ui/standalone/roles/g
 - **payara_deploy_packages**: list of remote archives to deploy. Each package supports:
   - `name`: application name
   - `package`: path/URL accepted by `deploy-remote-archive`
-  - `contextroot`: web context root (default: /)
-  - `target`: Payara target (default: server)
-  - `virtual`: virtual server name(s) (default: server)
+  - `contextroot`: web context root (default: package filename without extension)
+  - `target`: Specifies the target to which you are deploying (default: server)
+  - `virtual`: One or more virtual server IDs. Multiple IDs are separated by commas (optional)
 
 ### Service Configuration
 
 - **payara_systemd**: Indicates whether or not to install Payara as a systemd service, _true_ by default.
 - **payara_start**: Indicates whether or not to start the Payara systemd service, _true_ by default.
+- **payara_micro_java_opts**: optional JVM options for Payara Micro service startup (for example `-Xms512m -Xmx1024m`).
+- **payara_micro_args**: optional Payara Micro runtime arguments appended after `-jar` (for example `--port 8080 --deploy /opt/payara/apps/myapp.war`).
+
+### Important Behavior Notes
+
+- The role imports `vars/payara-<distribution>-<multilanguage>-ml.yml` to resolve `payara_url`.
+- For `payara_distribution: micro`, installation is currently skipped in `tasks/install.yml` (`when: payara_distribution != 'micro'`).
+- `payara_portbase` cannot be combined with `payara_port` or `payara_admin_port`.
+- Default port base: `4800`
+- Default admin port: `4848`
+- Default instance port: `8080`
+- Configuration tasks start and stop the domain during role execution; systemd start is controlled separately by `payara_start` and `payara_systemd`.
 
 ## Dependencies
 
@@ -177,7 +195,7 @@ A Java Development Kit is required based on Payara version (see Requirements sec
     - role: geerlingguy.java
       java_packages:
         - java-17-openjdk-devel
-    - role: naris.ansible-role-payara
+    - role: ansible-role-payara
 ```
 
 ### Advanced Configuration with Database and Network
@@ -232,7 +250,7 @@ A Java Development Kit is required based on Payara version (see Requirements sec
     - role: geerlingguy.java
       java_packages:
         - java-17-openjdk-devel
-    - role: naris.ansible-role-payara
+    - role: ansible-role-payara
 ```
 
 ### MySQL Database Configuration
@@ -257,7 +275,7 @@ A Java Development Kit is required based on Payara version (see Requirements sec
     - role: geerlingguy.java
       java_packages:
         - java-17-openjdk-devel
-    - role: naris.ansible-role-payara
+    - role: ansible-role-payara
 ```
 
 ### Oracle Database Configuration
@@ -281,7 +299,7 @@ A Java Development Kit is required based on Payara version (see Requirements sec
     - role: geerlingguy.java
       java_packages:
         - java-17-openjdk-devel
-    - role: naris.ansible-role-payara
+    - role: ansible-role-payara
 ```
 
 ## License

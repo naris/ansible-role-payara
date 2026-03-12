@@ -6,4 +6,3 @@ payara_user: payara
 payara_group: payara
 payara_base: /opt/payara
 payara_home: "{{ payara_base }}/payara{{ payara_glassfish_version }}{{ payara_glassfish_release }}"
-payara_admin_domain: "domain1"

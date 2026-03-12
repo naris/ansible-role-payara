@@ -1,0 +1,16 @@
+[Unit]
+Description=Payara Micro Server
+After=network.target
+
+[Service]
+Type=simple
+User={{ payara_user }}
+Group={{ payara_group }}
+WorkingDirectory={{ payara_home }}/bin
+ExecStart={{ (java_home ~ '/bin/java') if (java_home is defined and (java_home | string | length) > 0) else '/usr/bin/java' }} {{ payara_micro_java_opts | default('') }} -jar {{ payara_home }}/bin/payara-micro.jar {{ payara_micro_args | default('') }}
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

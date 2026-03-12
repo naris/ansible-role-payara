@@ -9,11 +9,13 @@ payara_admin_user: admin
 payara_admin_password: glassfish
 payara_url:
 payara_host: 0.0.0.0
-payara_portbase: 4800
-payara_admin_port: 4848
+payara_portbase: ""
+payara_port: ""
+payara_admin_port: ""
 payara_domain_name: "domain1"
 payara_systemd: true
 payara_start: true
+payara_debug: false
 payara_listeners: []
   # -
   #   name: http-listener
